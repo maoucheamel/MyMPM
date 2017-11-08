@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<meta charset=utf-8 />
+<script type="text/javascript" charset="UTF-8"></script>
+ <script src="video-ie8.js"></script>
+ <link href="//exemple.com/répertoire/to/video-js.css" rel="stylesheet">
+<script src="//exemple.com/répertoire/to/video.js"></script>;
+<script>
+videojs.options.flash.swf = "http://exemple.com/répertoire/to/video-js.swf";
+</script>
+ <script>
+	<!-- animation flash-->
+		videojs.options.flash.swf = "video-js.swf";
+  </script>
+ 
+ 
+<title>Mon projet </title>
+
+<h1> <marquee>Streaming </marquee></h1>
+<center>
+<h1> Vidéo Side by side</h1>
+
+<video id=v controls loop width="550" height="300">
+
+  <source src=video2.mp4 type=video/mp4>
+    <source src=video2.webm type=video/webm>
+    <source src=video2.ogg type=video/ogg>
+
+</video>
+
+<canvas id=c></canvas>
+
+ <div>
+	<h1> Choisir effet </h1>
+	
+	<select onChange="javascript:algorythm=this.value;draw(v,c,bc,cw,ch);">
+      <option value="2D" selected>2D</option>
+      <optgroup label="3d renderers">
+        <option value="true-anaglyphs">True Anaglyphs</option>
+        <option value="optimized-anaglyphs">Optimized Anaglyphs</option>
+        <option value="gray-anaglyphs">Gray Anaglyphs</option>
+        <option value="color-anaglyphs">Color Anaglyphs</option>
+        <option value="half-color-anaglyphs">Half Color Anaglyphs</option>
+      </optgroup>
+      <optgroup label="not 3d effects">
+        <option value="grayscale">Grayscale</option>
+        <option value="brightness">Brightness</option>
+        <option value="threshold">Threshold</option>
+      </optgroup>
+    </select>
+	
+	   </div>
+</center>
+	   
+	   <style>
+
+		body {
+			background: black;
+			color:#CCCCCC; 
+		}
+
+</style>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    var v = document.getElementById('v');
+    var canvas = document.getElementById('c');
+    var context = canvas.getContext('2d');
+    var back = document.createElement('canvas');
+    var backcontext = back.getContext('2d');
+	var algorythm = '2D';
+
+    var cw,ch;
+
+    v.addEventListener('play', function(){
+        cw = v.clientWidth;
+        ch = v.clientHeight;
+        canvas.width = cw;
+        canvas.height = ch;
+        back.width = cw;
+        back.height = ch;
+        draw(v,context,backcontext,cw,ch);
+    },false);
+
+},false);
+
+function draw(v,c,bc,cw,ch) {
+    if(v.paused || v.ended) return false;
+    // First, draw it into the backing canvas
+    bc.drawImage(v,0,0,cw,ch);
+    // Grab the pixel data from the backing canvas
+    var idata = bc.getImageData(0,0,cw,ch);
+    var data = idata.data;
+    var w = idata.width;
+    var limit = data.length
+	
+	 for(var i = 0; i < limit; i++) {
+        if( i%4 == 3 ) continue;
+	
+               data[i] = 127 + 2*data[i] - data[i + 4] - data[i + w*4];
+             
+    // Loop through the subpixels, convoluting each using an edge-detection matrix.
+    }
+    // Draw the pixels onto the visible canvas
+    c.putImageData(idata,0,0);
+  
+    setTimeout(draw,20,v,c,bc,cw,ch);
+}
+</script>
